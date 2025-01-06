@@ -7,10 +7,12 @@
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
+
+<script type="text/javascript" lang="javascript">
 	
-	<script type="text/javascript" lang="javascript">
-		<%@include file="validation.js" %>
-	</script>
+<%@include file="validation.js" %>
+	
+</script>
 </head>
 <body>
 	<div class="container mt-5">
@@ -26,7 +28,8 @@
 					type="password" class="form-control" id="password" name="password"
 					required>
 			</div>
-			<button type="submit" class="btn btn-primary w-100" onclick="loginValidation()">Login</button>
+			<button type="submit" class="btn btn-primary w-100"
+				onclick="loginValidation()">Login</button>
 			<p class="mt-3 text-center">
 				Don't have an account? <a href="register.jsp">Register here</a>
 			</p>

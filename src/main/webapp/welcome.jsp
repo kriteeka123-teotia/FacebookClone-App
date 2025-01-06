@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Profile</title>
+    <title>Welcome Page</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
@@ -11,9 +11,7 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="feed.jsp">Feed</a>
-                </li>
-                <li class="nav-item">
+                    <!-- Logout link -->
                     <a class="nav-link" href="logout">Logout</a>
                 </li>
             </ul>
@@ -21,16 +19,17 @@
     </nav>
 
     <div class="container mt-5">
-        <h1 class="text-center">Your Profile</h1>
+        <h1 class="text-center">Welcome, <%= session.getAttribute("username") %>!</h1>
+        <p class="text-center">Here is your profile information:</p>
+
         <div class="card mx-auto" style="width: 50%;">
             <div class="card-body">
-                <p><strong>Username:</strong> <%= session.getAttribute("username") %></p>
                 <p><strong>Full Name:</strong> <%= session.getAttribute("fullname") %></p>
                 <p><strong>Email:</strong> <%= session.getAttribute("email") %></p>
                 <p><strong>Bio:</strong> <%= session.getAttribute("bio") %></p>
                 <a href="edit.jsp" class="btn btn-primary">Edit Profile</a>
+                <a href="profile.jsp" class="btn btn-primary">See Profile</a>
                 <a href="feed.jsp" class="btn btn-primary">Feed</a>
-                <a href="logout" class="btn btn-primary">Logout</a>
             </div>
         </div>
     </div>

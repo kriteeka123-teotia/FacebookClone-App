@@ -1,29 +1,54 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Feed</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<div class="container mt-5">
-    <h2 class="text-center">Your Feed</h2>
-    <div class="mt-3">
-        <!-- Example post -->
-        <div class="card mb-3">
-            <div class="card-header">Posted by: User1</div>
-            <div class="card-body">
-                <p class="card-text">This is an example post on the feed.</p>
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Facebook Clone</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="profile.jsp">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="logout">Logout</a>
+                </li>
+            </ul>
         </div>
-        <!-- Add more posts dynamically -->
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Welcome to Your Feed</h1>
+        <div class="mt-4">
+            <!-- Example feed items -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    Posted by <b>John Doe</b> on <i>2024-01-01</i>
+                </div>
+                <div class="card-body">
+                    <p>This is a sample post in the feed.</p>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header">
+                    Posted by <b>Jane Smith</b> on <i>2024-01-02</i>
+                </div>
+                <div class="card-body">
+                    <p>Another example post for your feed.</p>
+                </div>
+                <div>
+                	<a href="profile.jsp" class="btn btn-primary">See Profile</a>
+                	<a href="logout" class="btn btn-primary">Logout</a>
+                </div>
+            </div>
+            <!-- Add more feed items dynamically -->
+        </div>
     </div>
-    <div class="mt-3 text-center">
-        <a href="profile.jsp" class="btn btn-secondary">View Profile</a>
-        <a href="logout" class="btn btn-danger">Logout</a>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

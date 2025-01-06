@@ -35,3 +35,25 @@ const password=document.getElementById("password").value;
 			alert('Invalid password!!');
 		}
 }
+
+function editValidation()
+{
+	
+const fullname=document.getElementById("fullname").value;
+const email=document.getElementById("email").value;
+const bio=document.getElementById("bio").value;
+
+	if(fullname==="")
+	{
+		alert('Invalid fullname!!');
+	}
+	if(email==="" || !email.includes("@"))
+		{
+			alert('Invalid email!!');
+		}
+	if(bio==="")
+		{
+			alert('Invalid bio!!');
+		}
+}
+
