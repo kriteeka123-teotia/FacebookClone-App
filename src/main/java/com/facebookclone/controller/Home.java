@@ -9,9 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.facebookclone.dao.UserDAO;
@@ -20,16 +17,12 @@ import com.facebookclone.model.User;
 @WebServlet("/")
 public class Home extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private UserDAO dao;
-
+    
     public Home() {
         super();
     }
 
-    public void init() {
-        dao = new UserDAO();
-    }
-
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         RequestDispatcher requestDispatcher = null;
         String action = request.getServletPath();
@@ -46,17 +39,9 @@ public class Home extends HttpServlet {
                     requestDispatcher.forward(request, response);
                     break;
 
-                case "/RegisterServlet":
-                    handleRegister(request, response);
-                    break;
-
                 case "/login":
                     requestDispatcher = request.getRequestDispatcher("login.jsp");
                     requestDispatcher.forward(request, response);
-                    break;
-
-                case "/LoginServlet":
-                    handleLogin(request, response);
                     break;
                     
                 case "/logout":
@@ -82,10 +67,6 @@ public class Home extends HttpServlet {
                     requestDispatcher = request.getRequestDispatcher("edit.jsp");
                     requestDispatcher.forward(request, response);
                     break;
-                    
-                case "/EditProfileServlet":
-                    handleEdit(request, response);
-                    break;
 
                 default:
                     response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -96,47 +77,74 @@ public class Home extends HttpServlet {
         }
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
+    	String action = request.getServletPath();
+        
+    	if ("/LoginServlet".equals(action)) {
+            try {
+				handleLogin(request, response);
+			} catch (ClassNotFoundException | ServletException | IOException e) {
+				return;
+			}
+        } else if ("/RegisterServlet".equals(action)) {
+            try {
+				handleRegister(request, response);
+			} catch (ClassNotFoundException | ServletException | IOException e) {
+				return;
+			}
+        } else if ("/EditProfileServlet".equals(action)) {
+            try {
+				handleEdit(request, response);
+			} catch (ClassNotFoundException | ServletException | IOException e) {
+				return;
+			}
+        }
     }
 
-    private void handleRegister(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = request.getParameter("username");
+    private void handleRegister(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ClassNotFoundException {
+    	String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        UserDAO dao = new UserDAO();
 
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(password);
 
-        dao.registerUser(user);
-
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher("welcome.jsp");
-        requestDispatcher.forward(request, response);
+        try {
+            dao.registerUser(user);
+            HttpSession session = request.getSession();
+            session.setAttribute("username", user.getUsername());
+            session.setAttribute("email", user.getEmail());
+            session.setAttribute("bio", user.getBio());
+            session.setAttribute("fullname", user.getFullname());
+            response.sendRedirect("welcome.jsp");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error occurred.");
+        }
     }
 
-    private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = request.getParameter("username");
+
+    private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ClassNotFoundException {
+    	String username = request.getParameter("username");
         String password = request.getParameter("password");
+        UserDAO dao = new UserDAO();
 
-        try (Connection connection = dao.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM users WHERE name = ? AND password = ?");
-            stmt.setString(1, username);
-            stmt.setString(2, password);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
+        try {
+            User user = dao.loginUser(username, password);
+            if (user != null) {
                 HttpSession session = request.getSession();
-                session.setAttribute("status", "active");
-                session.setAttribute("username", username);
-                RequestDispatcher requestDispatcher = request.getRequestDispatcher("welcome.jsp");
-                requestDispatcher.forward(request, response);
+                session.setAttribute("userId", user.getId());
+                session.setAttribute("username", user.getUsername());
+                session.setAttribute("fullname", user.getFullname());
+                session.setAttribute("email", user.getEmail());
+                response.sendRedirect("welcome.jsp"); // Redirect to welcome page
             } else {
-                HttpSession session = request.getSession();
-                session.setAttribute("status", "inactive");
-                RequestDispatcher requestDispatcher = request.getRequestDispatcher("login.jsp");
-                requestDispatcher.forward(request, response);
+                request.setAttribute("errorMessage", "Invalid username or password.");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -152,33 +160,43 @@ public class Home extends HttpServlet {
         response.sendRedirect("login.jsp");
     }
     
-    private void handleEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = request.getParameter("username");
+    private void handleEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ClassNotFoundException {
+    	// Get updated information from the request
+        String fullname = request.getParameter("fullname");
         String email = request.getParameter("email");
-        String password = request.getParameter("password");
-
-        HttpSession session = request.getSession(false);
+        String bio = request.getParameter("bio");
+        
+    	HttpSession session = request.getSession(); // Get the existing session
         if (session == null || session.getAttribute("userId") == null) {
+            // If no session or userId attribute is found, redirect to login
             response.sendRedirect("login.jsp");
             return;
         }
 
-        int userId = (Integer) session.getAttribute("userId");
+        // If userId is present, continue with profile editing
+        Integer userId = (Integer) session.getAttribute("userId"); // Get the logged-in user's ID
 
+        // Create a User object and set its fields
         User user = new User();
-        user.setId(userId);
-        user.setUsername(username);
+        user.setId(userId); // Set the user ID to identify which user to update
+        user.setFullname(fullname);
         user.setEmail(email);
-        user.setPassword(password);
+        user.setBio(bio);
 
-        dao.updateUser(user);
+        // Create an instance of the UserDAO to interact with the database
+        UserDAO userDAO = new UserDAO();
 
-        session.setAttribute("username", username);
-        session.setAttribute("email", email);
-        session.setAttribute("password", password);
+        // Update the user information in the database
+        boolean isUpdated = userDAO.updateUser(user);
 
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher("profile.jsp");
-        requestDispatcher.forward(request, response);
+        if (isUpdated) {
+            // If update is successful, redirect to profile page
+            response.sendRedirect("profile.jsp");
+        } else {
+            // If update failed, show an error message
+            request.setAttribute("errorMessage", "Failed to update profile. Please try again.");
+            request.getRequestDispatcher("edit.jsp").forward(request, response);
+        }
+        
     }
-
 }

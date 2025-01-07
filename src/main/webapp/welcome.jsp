@@ -24,7 +24,7 @@
 
         <div class="card mx-auto" style="width: 50%;">
             <div class="card-body">
-                <p><strong>Full Name:</strong> <%= session.getAttribute("fullname") %></p>
+                <p><strong>Full Name:</strong> <%= session.getAttribute("username") %></p>
                 <p><strong>Email:</strong> <%= session.getAttribute("email") %></p>
                 <p><strong>Bio:</strong> <%= session.getAttribute("bio") %></p>
                 <a href="edit.jsp" class="btn btn-primary">Edit Profile</a>

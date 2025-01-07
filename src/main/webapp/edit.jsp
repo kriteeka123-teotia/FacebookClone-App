@@ -9,6 +9,7 @@
     <div class="container mt-5">
         <h1 class="text-center">Edit Your Profile</h1>
         <form action="EditProfileServlet" method="post">
+        	<input type="hidden" name="userId" value="USER_ID_HERE" />
             <div class="form-group">
                 <label for="fullname">Full Name:</label>
                 <input type="text" name="fullname" class="form-control" value="<%= session.getAttribute("fullname") %>" required>
@@ -22,6 +23,8 @@
                 <textarea name="bio" class="form-control" required><%= session.getAttribute("bio") %></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="profile.jsp" class="btn btn-primary">Profile</a>
+            <a href="feed.jsp" class="btn btn-primary">Feed</a>
         </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

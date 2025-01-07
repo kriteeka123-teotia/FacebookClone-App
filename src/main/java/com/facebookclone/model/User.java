@@ -5,6 +5,7 @@ public class User {
     private String username;
     private String fullname;
     private String email;
+    private String bio;
     private String password;
 
     public int getId() {
@@ -45,5 +46,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 }
